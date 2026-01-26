@@ -3,9 +3,10 @@
 require_once __DIR__ . '/vendor/autoload.php';
 
 use MartijnGastkemper\Canasta\Card;
-use MartijnGastkemper\Canasta\CardRenderer;
 use MartijnGastkemper\Canasta\Deck;
-use MartijnGastkemper\Canasta\GameRenderer;
+use MartijnGastkemper\Canasta\Dispatcher;
+use MartijnGastkemper\Canasta\Game;
+use MartijnGastkemper\Canasta\RenderGame;
 use MartijnGastkemper\Canasta\Hand;
 use MartijnGastkemper\Canasta\HandRenderer;
 use MartijnGastkemper\Canasta\NonBlockingKeyboardPlayerInput;
@@ -18,21 +19,13 @@ use MartijnGastkemper\Canasta\Table;
 use MartijnGastkemper\Canasta\TableRenderer;
 
 // setup game
-$cardRenderer = new CardRenderer();
-$deck = Deck::create();
-$pool = new Pool();
+
 $userInput = new NonBlockingKeyboardPlayerInput();
-$table = new Table();
+$dispatcher = new Dispatcher(
+    [new RenderGame()]
+);
 
-// deal hand
-$hand = Hand::createFromDeck($deck, 11);
-
-// add first card to the pool
-$pool->addCard($deck->drawCard());
-
-$renderer = new GameRenderer();
-
-$renderer->render($hand, $pool, $table);
+$game = Game::start();
 
 while(true) {
     $pressedKey = $userInput->pressedKey();
@@ -42,22 +35,13 @@ while(true) {
             echo "Quitting game.\n";
             exit(0);
         case 'd':
-            $newCard = $deck->drawCard();
-            $hand->addCard($newCard);
-            $renderer->render($hand, $pool, $table);
+            $game->drawCard();
             break;
         case 'p':
-            $cardsInHand = $hand->getCards();
-            $card = array_pop($cardsInHand);
-            $pool->addCard($hand->playCard($card));
-            $renderer->render($hand, $pool, $table);
+            $game->playCard();
             break;
         case 'a':
-            $cardsInHand = $hand->getCards();
-            $card = array_pop($cardsInHand);
-            $card = $hand->playCard($card);
-            $table->addCard($card, new Slot($card->rank));
-            $renderer->render($hand, $pool, $table);
+            $game->addToTable();
             break;
         case 'h':
             echo "You pressed h for help!\n";
@@ -66,4 +50,6 @@ while(true) {
             // No key pressed, continue
             break;
     }
+
+    $dispatcher->dispatch($game->flushEvents());
 }
