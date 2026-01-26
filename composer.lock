@@ -1,0 +1,59 @@
+{
+    "_readme": [
+        "This file locks the dependencies of your project to a known state",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+        "This file is @generated automatically"
+    ],
+    "content-hash": "ff21d5cfdffa836d2b55f1969e030e96",
+    "packages": [
+        {
+            "name": "shawnmccool/phansi",
+            "version": "1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/ShawnMcCool/phansi.git",
+                "reference": "e4e3c24f27c776d6aab07f30381b542b2c93de30"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/ShawnMcCool/phansi/zipball/e4e3c24f27c776d6aab07f30381b542b2c93de30",
+                "reference": "e4e3c24f27c776d6aab07f30381b542b2c93de30",
+                "shasum": ""
+            },
+            "type": "library",
+            "autoload": {
+                "files": [
+                    "src/functions.php"
+                ],
+                "psr-4": {
+                    "PhAnsi\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Shawn McCool",
+                    "email": "shawn@mccool.email"
+                }
+            ],
+            "description": "A light-weight self-contained PHP Ansi library.",
+            "support": {
+                "issues": "https://github.com/ShawnMcCool/phansi/issues",
+                "source": "https://github.com/ShawnMcCool/phansi/tree/1.1"
+            },
+            "time": "2023-11-22T11:24:56+00:00"
+        }
+    ],
+    "packages-dev": [],
+    "aliases": [],
+    "minimum-stability": "stable",
+    "stability-flags": {},
+    "prefer-stable": false,
+    "prefer-lowest": false,
+    "platform": {},
+    "platform-dev": {},
+    "plugin-api-version": "2.6.0"
+}

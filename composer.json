@@ -1,0 +1,19 @@
+{
+    "name": "martijngastkemper/canasta-php",
+    "description": "Play Canasta in your terminal.",
+    "type": "project",
+    "autoload": {
+        "psr-4": {
+            "MartijnGastkemper\\Canasta\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Martijn Gastkemper",
+            "email": "contact@martijngastkemper.nl"
+        }
+    ],
+    "require": {
+        "shawnmccool/phansi": "^1.1"
+    }
+}
