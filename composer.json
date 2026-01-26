@@ -5,15 +5,15 @@
     "autoload": {
         "psr-4": {
             "MartijnGastkemper\\Canasta\\": "src/"
-        }
+        },
+        "files": [
+            "src/functions.php"
+        ]
     },
     "authors": [
         {
             "name": "Martijn Gastkemper",
             "email": "contact@martijngastkemper.nl"
         }
-    ],
-    "require": {
-        "shawnmccool/phansi": "^1.1"
-    }
+    ]
 }

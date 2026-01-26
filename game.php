@@ -5,6 +5,7 @@ require_once __DIR__ . '/vendor/autoload.php';
 use MartijnGastkemper\Canasta\Card;
 use MartijnGastkemper\Canasta\CardRenderer;
 use MartijnGastkemper\Canasta\Deck;
+use MartijnGastkemper\Canasta\GameRenderer;
 use MartijnGastkemper\Canasta\Hand;
 use MartijnGastkemper\Canasta\HandRenderer;
 use MartijnGastkemper\Canasta\NonBlockingKeyboardPlayerInput;
@@ -29,7 +30,9 @@ $hand = Hand::createFromDeck($deck, 11);
 // add first card to the pool
 $pool->addCard($deck->drawCard());
 
-echo "Press 'q' to quit, 's' to show table, 'd' to draw a card, 'p' to play a card, 'h' for help.\n";
+$renderer = new GameRenderer();
+
+$renderer->render($hand, $pool, $table);
 
 while(true) {
     $pressedKey = $userInput->pressedKey();
@@ -40,26 +43,21 @@ while(true) {
             exit(0);
         case 'd':
             $newCard = $deck->drawCard();
-            echo "Drew card from deck: " . $cardRenderer->render($newCard) . "\n";
             $hand->addCard($newCard);
+            $renderer->render($hand, $pool, $table);
             break;
         case 'p':
             $cardsInHand = $hand->getCards();
             $card = array_pop($cardsInHand);
             $pool->addCard($hand->playCard($card));
-            echo "Played card: " . $cardRenderer->render($card) . "\n";
+            $renderer->render($hand, $pool, $table);
             break;
         case 'a':
             $cardsInHand = $hand->getCards();
             $card = array_pop($cardsInHand);
             $card = $hand->playCard($card);
             $table->addCard($card, new Slot($card->rank));
-            echo "Added card to table: " . $cardRenderer->render($card) . "\n";
-            break;
-        case 's':
-            (new PoolRenderer())->render($pool);
-            (new TableRenderer())->render($table);
-            (new HandRenderer())->render($hand);
+            $renderer->render($hand, $pool, $table);
             break;
         case 'h':
             echo "You pressed h for help!\n";
@@ -67,7 +65,5 @@ while(true) {
         case null:
             // No key pressed, continue
             break;
-        default:
-            echo "You pressed: " . $pressedKey . "\n";
     }
 }

@@ -4,11 +4,16 @@ namespAce MartijnGastkemper\Canasta;
 
 final class CardRenderer {
 
-    public function render(CardInterfAce $card): string {
+    public function render(CardInterface $card): string {
         if ($card instanceof Joker) {
-            return "Joker " . $card->color->name;
+            return bgWhite(mb_chr(0x2009) . '🤡' . mb_chr(0x2009));
         }
 
-        return $card->rank->name . " of " . $card->suite->name;
+        if ($card->suite === Suite::Clubs) return bgWhite(mb_chr(0x2009) . "♣️ " . $card->rank->character() . mb_chr(0x2009));
+        if ($card->suite === Suite::Diamonds) return bgWhite(mb_chr(0x2009) . '♦️ ' . $card->rank->character() . mb_chr(0x2009));
+        if ($card->suite === Suite::Hearts) return bgWhite(mb_chr(0x2009) . '♥️ ' . $card->rank->character() . mb_chr(0x2009));
+        if ($card->suite === Suite::Spades) return bgWhite(mb_chr(0x2009) . '♠️ ' . $card->rank->character() . mb_chr(0x2009));
+
+        throw new \Exception('Unknown card type');
     }
 }
