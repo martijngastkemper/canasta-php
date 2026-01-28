@@ -50,9 +50,9 @@ while(true) {
             break;
         case "\n":
             // Play selected card
-            // $game->playCard();
+            $game->playCard();
             // Play selected cards
-            $game->addToTable();
+            // $game->addToTable();
             break;
         case 'h':
             echo "You pressed h for help!\n";

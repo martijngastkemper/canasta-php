@@ -49,14 +49,14 @@ final class Hand {
         return $this->selectedCardIndexes;
     }
 
-    public function playCard(CardInterface $card): CardInterface {
-        foreach ($this->cards as $key => $handCard) {
-            if ($handCard === $card) {
-                unset($this->cards[$key]);
-                return $card;
+    public function getSelectedCards(): array {
+        $selectedCards = [];
+        foreach ($this->selectedCardIndexes as $position) {
+            if (isset($this->cards[$position])) {
+                $selectedCards[] = $this->cards[$position];
             }
         }
-        throw new \InvalidArgumsentException("Card not found in hand");
+        return $selectedCards;
     }
 
     public function addCard(CardInterface $card): self {

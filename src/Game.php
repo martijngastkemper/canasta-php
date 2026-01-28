@@ -40,9 +40,13 @@ final class Game {
     }
 
     public function playCard(): void {
-        $cardsInHand = $this->hand->getCards();
-        $card = array_pop($cardsInHand);
-        $this->pool->addCard($this->hand->playCard($card));
+        $cards = $this->hand->getSelectedCards();
+        if (count($cards) !== 1) {
+            return;
+        }
+        $cards = $this->hand->playSelectedCards();
+        $card = $cards[0];
+        $this->pool->addCard($card);
         $this->pendingEvents[] = new CardPlayed($card);
     }
 
