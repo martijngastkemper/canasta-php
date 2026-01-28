@@ -11,11 +11,14 @@ final class Slot {
         $this->rank = $rank;
     }
 
-    public function addCard(Card $card): self {
-        if ($card->rank !== $this->rank) {
-            throw new \InvalidArgumentException("Card rank does not match slot rank");
+    public function addCards(array $cards): self {
+        foreach ($cards as $card) {
+
+            if ($card->rank !== $this->rank) {
+                throw new \InvalidArgumentException("Card rank does not match slot rank");
+            }
+            $this->cards[] = $card;
         }
-        $this->cards[] = $card;
         return $this;
     }
 

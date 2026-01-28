@@ -4,6 +4,8 @@ namespace MartijnGastkemper\Canasta;
 
 final class Hand {
 
+    private array $selectedCardIndexes = [];
+
     public function __construct(private array $cards) {}
 
     public static function createFromDeck(Deck $deck, int $numberOfCards): Hand {
@@ -16,6 +18,35 @@ final class Hand {
 
     public function getCards(): array {
         return $this->cards;
+    }
+
+    public function selectCard(int $position): void {
+        if (in_array($position, $this->selectedCardIndexes, true)) {
+            // Deselect
+            $this->selectedCardIndexes = array_filter($this->selectedCardIndexes, fn($pos) => $pos !== $position);
+        } else {
+            // Select
+            $this->selectedCardIndexes[] = $position;
+        }
+    }
+
+    public function playSelectedCards(): array {
+        $playedCards = [];
+        foreach ($this->selectedCardIndexes as $position) {
+            if (!isset($this->cards[$position])) {
+                throw new \InvalidArgumentException("Card position $position not found in hand");
+            }
+            $playedCards[] = $this->cards[$position];
+            unset($this->cards[$position]);
+        }
+        // Reindex the cards array
+        $this->cards = array_values($this->cards);
+        $this->selectedCardIndexes = [];
+        return $playedCards;
+    }
+
+    public function getSelectedCardIndexes(): array {
+        return $this->selectedCardIndexes;
     }
 
     public function playCard(CardInterface $card): CardInterface {
@@ -31,6 +62,7 @@ final class Hand {
     public function addCard(CardInterface $card): self {
         $this->cards[] = $card;
         $this->sort();
+        $this->selectedCardIndexes = [];
         return $this;
     }
 

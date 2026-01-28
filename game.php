@@ -18,12 +18,11 @@ use MartijnGastkemper\Canasta\Suite;
 use MartijnGastkemper\Canasta\Table;
 use MartijnGastkemper\Canasta\TableRenderer;
 
-// setup game
-
-$userInput = new NonBlockingKeyboardPlayerInput();
 $dispatcher = new Dispatcher(
     [new RenderGame()]
 );
+
+$userInput = new NonBlockingKeyboardPlayerInput();
 
 $game = Game::start();
 
@@ -31,16 +30,28 @@ while(true) {
     $pressedKey = $userInput->pressedKey();
     
     switch ($pressedKey) {
+        case 'a':
+            $game->moveCursorLeft();
+            break;
+        case 'd':
+            $game->moveCursorRight();
+            break;
         case 'q':
             echo "Quitting game.\n";
             exit(0);
-        case 'd':
+        case 'c':
             $game->drawCard();
             break;
         case 'p':
-            $game->playCard();
+            $game->drawPool();
             break;
-        case 'a':
+        case 's':
+            $game->toggleSelection();
+            break;
+        case "\n":
+            // Play selected card
+            // $game->playCard();
+            // Play selected cards
             $game->addToTable();
             break;
         case 'h':

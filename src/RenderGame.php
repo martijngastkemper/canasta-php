@@ -10,15 +10,25 @@ final class RenderGame implements EventListener {
     private Hand $hand;
     private Pool $pool;
     private Table $table;
+    private int $cursorPosition = 0;
+    private array $selectedCardIndices = [];
 
     public function handle($event): void {
 
         if ($event instanceof GameStarted) {
+            clear_screen();
+
             $this->hand = $event->hand;
             $this->pool = $event->pool;
             $this->table = $event->table;
-            $this->render();
-            return;
+        }
+
+        if ($event instanceof CursorMoved) {
+            $this->cursorPosition = $event->newPosition;
+        }
+
+        if ($event instanceof CardSelected) {
+            $this->selectedCardIndices = $event->selectedCardIndices;
         }
 
         // if ($event instanceof DrewCard) {
@@ -28,6 +38,8 @@ final class RenderGame implements EventListener {
     }
 
     private function render() {
+        // Quick fix to remove previous rendered ANSII
+        // But when scrolling up in the terminal, the previous renderings are still visible
         clear_screen();
         set_cursor_position(2, 1);
 
@@ -43,10 +55,48 @@ final class RenderGame implements EventListener {
             echo "\n";
         }
 
-        echo "\nHand:\n";
+        echo "\nHand:\n\n";
 
-        foreach ($this->hand->getCards() as $card) {
+        // $this->eraseHand();
+
+        foreach ($this->hand->getCards() as $i => $card) {
+            if (in_array($i, $this->selectedCardIndices, true)) {
+                move_cursor_up(1);
+            }
+
             echo $cardRenderer->render($card);
+
+            if (in_array($i, $this->selectedCardIndices, true)) {
+                move_cursor_down(1);
+            }
+
+            if ($i === $this->cursorPosition) {
+                $this->renderCursor();
+            }
+
         }
+        echo "\n\n";
     }
+
+    private function renderCursor(): void {
+        ns_save_cursor_position();
+        move_cursor_down(1);
+        move_cursor_backward(3);
+        echo "👆";
+        ns_restore_cursor_position();
+    }
+
+    // private function eraseHand(): void {
+    //     ns_save_cursor_position();
+    //     // erase selected cards line
+    //     move_cursor_up(1);
+    //     erase_to_end_of_line();
+    //     // erase cards line
+    //     move_cursor_down(1);
+    //     erase_to_end_of_line();
+    //     // erase selected cards line
+    //     move_cursor_down(1);
+    //     erase_to_end_of_line();
+    //     ns_restore_cursor_position();
+    // }
 }

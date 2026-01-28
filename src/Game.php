@@ -9,6 +9,7 @@ final class Game {
     public Hand $hand;
     public Table $table;
     private array $pendingEvents = [];
+    public int $cursorPosition = 0;
 
     public static function start(): Game {
         $game = new Game();
@@ -46,12 +47,26 @@ final class Game {
     }
 
     public function addToTable(): void {
-        $cardsInHand = $this->hand->getCards();
-        $card = array_pop($cardsInHand);
-        $card = $this->hand->playCard($card);
-        $this->table->addCard($card, new Slot($card->rank));
+        $cards = $this->hand->playSelectedCards();
+        $this->table->addCards($cards, new Slot($cards[0]->rank));
 
         $this->pendingEvents[] = new TableUpdated();
+        $this->pendingEvents[] = new CardSelected($this->hand->getSelectedCardIndexes());
+    }
+
+    public function moveCursorRight(): void {
+        $this->cursorPosition = min(count($this->hand->getCards()) - 1, $this->cursorPosition + 1);
+        $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
+    }
+
+    public function moveCursorLeft(): void {
+        $this->cursorPosition = max(0, $this->cursorPosition - 1);
+        $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
+    }
+
+    public function toggleSelection(): void {
+        $this->hand->selectCard($this->cursorPosition);
+        $this->pendingEvents[] = new CardSelected($this->hand->getSelectedCardIndexes());
     }
 
     public function flushEvents(): array {

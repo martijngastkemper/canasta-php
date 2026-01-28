@@ -7,7 +7,7 @@ final class Table {
     private array $canastas = [];
     private array $slots = [];
 
-    public function addCard(CardInterface $card, Slot $slot): self {
+    public function addCards(array $cards, Slot $slot): self {
         $existingSlot = null;
         foreach ($this->slots as $tableSlot) {
             if ($tableSlot->rank === $slot->rank) {
@@ -16,9 +16,9 @@ final class Table {
             }
         }
         if ($existingSlot === null) {
-            $this->slots[] = $existingSlot = new Slot($card->rank);
+            $this->slots[] = $existingSlot = $slot;
         }
-        $existingSlot->addCard($card);
+        $existingSlot->addCards($cards);
         return $this;
     }
 
