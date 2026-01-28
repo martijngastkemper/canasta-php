@@ -56,7 +56,7 @@ final class Canasta {
         if ($this->rank !== $other->rank) {
             throw new \InvalidArgumentException("Cannot merge Canastas of different ranks");
         }
-        foreach ($other->getCards()->all() as $card) {
+        foreach ($other->getCards() as $card) {
             $this->add($card);
         }
     }

@@ -2,7 +2,7 @@
 
 namespace MartijnGastkemper\Canasta;
 
-final class Cards {
+final class Cards implements \IteratorAggregate {
 
     public function __construct(private array $cards = []) {
     }
@@ -22,6 +22,10 @@ final class Cards {
 
     public function first(): ?CardInterface {
         return $this->cards[0] ?? null;
+    }
+
+    public function getIterator(): \Traversable {
+        return new \ArrayIterator($this->cards);
     }
 
     public function hasSingleRank(): bool {
