@@ -10,7 +10,7 @@ final class Table {
         $existingCanasta = null;
 
         foreach ($this->canastas as $tableCanasta) {
-            if ($tableCanasta->rank === $canasta->rank) {
+            if ($tableCanasta->getRank() === $canasta->getRank()) {
                 $existingCanasta = $tableCanasta;
                 break;
             }
