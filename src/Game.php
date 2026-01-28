@@ -30,6 +30,10 @@ final class Game {
     }
 
     public function drawCard(): void {
+        if ($this->deck->isEmpty()) {
+            // game should be over
+            return;
+        }
         $newCard = $this->deck->drawCard();
         $this->hand->addCard($newCard);
         $this->pendingEvents[] = new DrewCard($newCard);
@@ -50,8 +54,7 @@ final class Game {
         $cards = $this->hand->playSelectedCards();
         $this->table->addCards($cards, new Slot($cards[0]->rank));
 
-        $this->pendingEvents[] = new TableUpdated();
-        $this->pendingEvents[] = new CardSelected($this->hand->getSelectedCardIndexes());
+        $this->pendingEvents[] = new TableUpdated($this->hand->getSelectedCardIndexes());
     }
 
     public function moveCursorRight(): void {

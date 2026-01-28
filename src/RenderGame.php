@@ -15,6 +15,14 @@ final class RenderGame implements EventListener {
 
     public function handle($event): void {
 
+        if ($event instanceof CardSelected) {
+            $this->selectedCardIndices = $event->selectedCardIndices;
+        }
+
+        if ($event instanceof CursorMoved) {
+            $this->cursorPosition = $event->newPosition;
+        }
+
         if ($event instanceof GameStarted) {
             clear_screen();
 
@@ -23,18 +31,11 @@ final class RenderGame implements EventListener {
             $this->table = $event->table;
         }
 
-        if ($event instanceof CursorMoved) {
-            $this->cursorPosition = $event->newPosition;
-        }
-
-        if ($event instanceof CardSelected) {
+        if ($event instanceof TableUpdated) {
             $this->selectedCardIndices = $event->selectedCardIndices;
         }
 
-        // if ($event instanceof DrewCard) {
-            $this->render();
-            // return;
-        // }
+        $this->render();
     }
 
     private function render() {
@@ -60,6 +61,10 @@ final class RenderGame implements EventListener {
         // $this->eraseHand();
 
         foreach ($this->hand->getCards() as $i => $card) {
+            // Limit the number of cards per line
+            if ($i % 13 === 0 && $i !== 0) {
+                echo "\n\n\n";
+            }
             if (in_array($i, $this->selectedCardIndices, true)) {
                 move_cursor_up(1);
             }

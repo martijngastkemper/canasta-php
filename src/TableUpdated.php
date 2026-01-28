@@ -2,4 +2,8 @@
 
 namespace MartijnGastkemper\Canasta;
 
-final class TableUpdated {}
+final class TableUpdated {
+    public function __construct(public array $selectedCardIndices) {
+
+    }
+}

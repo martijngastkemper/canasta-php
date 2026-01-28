@@ -26,12 +26,11 @@ final class Deck {
         return $this;
     }
 
-    public function getCards(): array {
-        return $this->cards;
-    }
-
-    public function drawCard(): CardInterfAce {
+    public function drawCard(): CardInterface {
         return array_pop($this->cards);
     }
 
+    public function isEmpty(): bool {
+        return empty($this->cards);
+    }
 }
