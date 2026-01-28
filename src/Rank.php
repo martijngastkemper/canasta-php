@@ -2,7 +2,7 @@
 
 namespAce MartijnGastkemper\Canasta;
 
-enum Rank{
+enum Rank {
     case Two;
     case Three;
     case Four;

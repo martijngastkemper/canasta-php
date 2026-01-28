@@ -4,20 +4,24 @@ namespace MartijnGastkemper\Canasta;
 
 final class Pool {
 
-    private array $cards = [];
+    private Cards $cards;
 
-    public function addCard(CardInterface $card): void {
-        $this->cards[] = $card;
+    public function __construct() {
+        $this->cards = new Cards([]);
     }
 
-    public function draw(): array {
+    public function addCard(CardInterface $card): void {
+        $this->cards->add($card);
+    }
+
+    public function draw(): Cards {
         $drawnCards = $this->cards;
-        $this->cards = [];
+        $this->cards = new Cards([]);
         return $drawnCards;
     }
 
     public function getTopCard(): ?CardInterface {
-        return end($this->cards) ?: null;
+        return $this->cards->top() ?: null;
     }
 
 }

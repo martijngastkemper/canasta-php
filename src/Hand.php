@@ -6,17 +6,17 @@ final class Hand {
 
     private array $selectedCardIndexes = [];
 
-    public function __construct(private array $cards) {}
+    public function __construct(private Cards $cards) {}
 
     public static function createFromDeck(Deck $deck, int $numberOfCards): Hand {
         $cards = [];
         for ($i = 0; $i < $numberOfCards; $i++) {
             $cards[] = $deck->drawCard();
         }
-        return new Hand($cards)->sort();
+        return new Hand(new Cards($cards)->sort());
     }
 
-    public function getCards(): array {
+    public function getCards(): Cards {
         return $this->cards;
     }
 
@@ -30,17 +30,9 @@ final class Hand {
         }
     }
 
-    public function playSelectedCards(): array {
-        $playedCards = [];
-        foreach ($this->selectedCardIndexes as $position) {
-            if (!isset($this->cards[$position])) {
-                throw new \InvalidArgumentException("Card position $position not found in hand");
-            }
-            $playedCards[] = $this->cards[$position];
-            unset($this->cards[$position]);
-        }
-        // Reindex the cards array
-        $this->cards = array_values($this->cards);
+    public function playSelectedCards(): Cards {
+        $playedCards = $this->cards->only($this->selectedCardIndexes);
+        $this->cards->forget($this->selectedCardIndexes);
         $this->selectedCardIndexes = [];
         return $playedCards;
     }
@@ -49,27 +41,15 @@ final class Hand {
         return $this->selectedCardIndexes;
     }
 
-    public function getSelectedCards(): array {
-        $selectedCards = [];
-        foreach ($this->selectedCardIndexes as $position) {
-            if (isset($this->cards[$position])) {
-                $selectedCards[] = $this->cards[$position];
-            }
-        }
-        return $selectedCards;
+    public function countSelectedCards(): int {
+        return count($this->selectedCardIndexes);
     }
 
     public function addCard(CardInterface $card): self {
-        $this->cards[] = $card;
-        $this->sort();
+        $this->cards->add($card);
+        $this->cards->sort();
         $this->selectedCardIndexes = [];
         return $this;
     }
 
-    public function sort(): self {
-        usort($this->cards, function (CardInterface $a, CardInterface $b) {
-            return $a->getOrderByWeight() <=> $b->getOrderByWeight();
-        });
-        return $this;
-    }
 }

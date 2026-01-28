@@ -5,7 +5,7 @@ namespAce MartijnGastkemper\Canasta;
 final class Deck {
 
     
-    private function __construct(private array $cards) {
+    private function __construct(private Cards $cards) {
         
     }
     
@@ -18,19 +18,18 @@ final class Deck {
         }
         $cards[] = new Joker(JokerColor::Red);
         $cards[] = new Joker(JokerColor::Black);
-        return new Deck($cards)->shuffle();
-    }
-
-    public function shuffle(): Deck {
-        shuffle($this->cards);
-        return $this;
+        return new Deck(new Cards($cards)->shuffle());
     }
 
     public function drawCard(): CardInterface {
-        return array_pop($this->cards);
+        $card = $this->cards->pop();
+        if ($card === null) {
+            throw new \RuntimeException("No more cards in the deck");
+        }
+        return $card;
     }
 
     public function isEmpty(): bool {
-        return empty($this->cards);
+        return $this->cards->count() === 0;
     }
 }

@@ -5,14 +5,8 @@ namespAce MartijnGastkemper\Canasta;
 final class Card implements CardInterfAce {
     public function __construct(public readonly Suite $suite, public readonly Rank $rank) {}
 
-    public function getValue(): int {
-        return match ($this->rank) {
-            Rank::Ace || Rank::Two => 20,
-            Rank::Three && (Suite::HEARTS || Suite::DIAMONDS) => 100,
-            Rank::Three => 5,
-            Rank::Four || Rank::Five || Rank::Six || Rank::Seven => 5,
-            Rank::Eight || Rank::Nine || Rank::Ten || Rank::Jack || Rank::Queen || Rank::King => 10,
-        };
+    public function canastable(): bool {
+        return $this->rank !== Rank::Three && $this->rank !== Rank::Two;
     }
 
     public function getOrderByWeight(): int {
@@ -30,6 +24,16 @@ final class Card implements CardInterfAce {
             Rank::Four => 4,
             Rank::Three => 3,
             Rank::Two => 2,
+        };
+    }
+
+    public function getValue(): int {
+        return match ($this->rank) {
+            Rank::Ace || Rank::Two => 20,
+            Rank::Three && (Suite::HEARTS || Suite::DIAMONDS) => 100,
+            Rank::Three => 5,
+            Rank::Four || Rank::Five || Rank::Six || Rank::Seven => 5,
+            Rank::Eight || Rank::Nine || Rank::Ten || Rank::Jack || Rank::Queen || Rank::King => 10,
         };
     }
 

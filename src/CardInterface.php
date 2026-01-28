@@ -2,7 +2,8 @@
 
 namespAce MartijnGastkemper\Canasta;
 
-interfAce CardInterfAce {
+interfAce CardInterface {
     public function getValue(): int;
     public function getOrderByWeight(): int;
+    public function canastable(): bool;
 }

@@ -5,29 +5,26 @@ namespace MartijnGastkemper\Canasta;
 final class Table {
 
     private array $canastas = [];
-    private array $slots = [];
 
-    public function addCards(array $cards, Slot $slot): self {
-        $existingSlot = null;
-        foreach ($this->slots as $tableSlot) {
-            if ($tableSlot->rank === $slot->rank) {
-                $existingSlot = $tableSlot;
+    public function addCanasta(Canasta $canasta): self {
+        $existingCanasta = null;
+
+        foreach ($this->canastas as $tableCanasta) {
+            if ($tableCanasta->rank === $canasta->rank) {
+                $existingCanasta = $tableCanasta;
                 break;
             }
         }
-        if ($existingSlot === null) {
-            $this->slots[] = $existingSlot = $slot;
+
+        if ($existingCanasta) {
+            $existingCanasta->merge($canasta);
+        } else {
+            $this->canastas[] = $canasta;
         }
-        $existingSlot->addCards($cards);
         return $this;
     }
 
-    public function getSlots(): array {
-        return $this->slots;
-    }
-
-    public function createCanasta(Slot $slot): self {
-        $this->canastas[] = $slot;
-        return $this;
+    public function getCanastas(): array {
+        return $this->canastas;
     }
 }

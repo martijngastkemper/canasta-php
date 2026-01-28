@@ -8,15 +8,11 @@ use MartijnGastkemper\Canasta\Dispatcher;
 use MartijnGastkemper\Canasta\Game;
 use MartijnGastkemper\Canasta\RenderGame;
 use MartijnGastkemper\Canasta\Hand;
-use MartijnGastkemper\Canasta\HandRenderer;
 use MartijnGastkemper\Canasta\NonBlockingKeyboardPlayerInput;
 use MartijnGastkemper\Canasta\Pool;
-use MartijnGastkemper\Canasta\PoolRenderer;
 use MartijnGastkemper\Canasta\Rank;
-use MartijnGastkemper\Canasta\Slot;
 use MartijnGastkemper\Canasta\Suite;
 use MartijnGastkemper\Canasta\Table;
-use MartijnGastkemper\Canasta\TableRenderer;
 
 $dispatcher = new Dispatcher(
     [new RenderGame()]
@@ -50,9 +46,9 @@ while(true) {
             break;
         case "\n":
             // Play selected card
-            $game->playCard();
+            // $game->playCard();
             // Play selected cards
-            // $game->addToTable();
+            $game->addToTable();
             break;
         case 'h':
             echo "You pressed h for help!\n";

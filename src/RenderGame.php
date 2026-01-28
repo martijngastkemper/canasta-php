@@ -49,8 +49,8 @@ final class RenderGame implements EventListener {
         echo "Pool Top Card: " . $cardRenderer->render($this->pool->getTopCard()) . "\n\n";
 
         echo "Table:\n";
-        foreach ($this->table->getSlots() as $slot) {
-            foreach ($slot->getCards() as $card) {
+        foreach ($this->table->getCanastas() as $canasta) {
+            foreach ($canasta->getCards()->all() as $card) {
                 echo $cardRenderer->render($card) . " ";
             }
             echo "\n";
@@ -60,7 +60,7 @@ final class RenderGame implements EventListener {
 
         // $this->eraseHand();
 
-        foreach ($this->hand->getCards() as $i => $card) {
+        foreach ($this->hand->getCards()->all() as $i => $card) {
             // Limit the number of cards per line
             if ($i % 13 === 0 && $i !== 0) {
                 echo "\n\n\n";
