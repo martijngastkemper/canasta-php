@@ -62,13 +62,21 @@ final class Game {
     }
 
     public function moveCursorRight(): void {
-        $this->cursorPosition = min($this->hand->getCards()->count() - 1, $this->cursorPosition + 1);
+        $newPosition = $this->cursorPosition + 1;
+        if ($newPosition >= $this->hand->getCards()->count()) {
+            $newPosition = 0;
+        }
+        $this->cursorPosition = $newPosition;
         $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
     }
 
     public function moveCursorLeft(): void {
-        $this->cursorPosition = max(0, $this->cursorPosition - 1);
-        $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
+        $newPosition = $this->cursorPosition - 1;
+        if ($newPosition < 0) {
+            $newPosition = $this->hand->getCards()->count() - 1;
+        }
+        $this->cursorPosition = $newPosition;
+         $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
     }
 
     public function toggleSelection(): void {
