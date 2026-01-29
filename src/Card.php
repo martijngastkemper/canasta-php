@@ -5,10 +5,6 @@ namespAce MartijnGastkemper\Canasta;
 final class Card implements CardInterface {
     public function __construct(public readonly Suite $suite, public readonly Rank $rank) {}
 
-    public function canastable(): bool {
-        return $this->rank !== Rank::Three && $this->rank !== Rank::Two;
-    }
-
     public function getOrderByWeight(): int {
         return match ($this->rank) {
             Rank::Ace => 14,

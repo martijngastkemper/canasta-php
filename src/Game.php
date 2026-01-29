@@ -132,6 +132,9 @@ final class Game {
             return null;
             // throw new \InvalidArgumentException("Canasta object must contain more cards then jokers.");
         }
+
+        // Handle three of hearts and diamonds => not allowed to, shouldn't be available here.
+        // Handle threes of club and spades => only allowed when finishing the round.
         
         return new Canasta($cards, $cards->getFirstRank());
     }
