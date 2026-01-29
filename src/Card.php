@@ -2,7 +2,7 @@
 
 namespAce MartijnGastkemper\Canasta;
 
-final class Card implements CardInterfAce {
+final class Card implements CardInterface {
     public function __construct(public readonly Suite $suite, public readonly Rank $rank) {}
 
     public function canastable(): bool {
@@ -35,6 +35,10 @@ final class Card implements CardInterfAce {
             Rank::Four || Rank::Five || Rank::Six || Rank::Seven => 5,
             Rank::Eight || Rank::Nine || Rank::Ten || Rank::Jack || Rank::Queen || Rank::King => 10,
         };
+    }
+
+    public function isJoker(): bool {
+        return $this->rank === Rank::Two;
     }
 
 }

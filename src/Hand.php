@@ -16,8 +16,30 @@ final class Hand {
         return new Hand(new Cards($cards)->sort());
     }
 
+    public function addCard(CardInterface $card): self {
+        $this->cards->add($card);
+        $this->cards->sort();
+        $this->resetSelectedCards();
+        return $this;
+    }
+
     public function getCards(): Cards {
         return $this->cards;
+    }
+
+    public function getSelectedCards(): Cards {
+        return $this->cards->only($this->selectedCardIndexes);
+    }
+
+    public function isSelected(CardInterface $card): bool {
+        return $this->getSelectedCards()->contains($card);
+    }
+
+    public function playSelectedCards(): Cards {
+        $selectedCards = $this->getSelectedCards();
+        $this->cards->forget($this->selectedCardIndexes);
+        $this->resetSelectedCards();
+        return $selectedCards;
     }
 
     public function selectCard(int $position): void {
@@ -29,27 +51,8 @@ final class Hand {
             $this->selectedCardIndexes[] = $position;
         }
     }
-
-    public function playSelectedCards(): Cards {
-        $playedCards = $this->cards->only($this->selectedCardIndexes);
-        $this->cards->forget($this->selectedCardIndexes);
+    
+    private function resetSelectedCards(): void {
         $this->selectedCardIndexes = [];
-        return $playedCards;
     }
-
-    public function getSelectedCardIndexes(): array {
-        return $this->selectedCardIndexes;
-    }
-
-    public function countSelectedCards(): int {
-        return count($this->selectedCardIndexes);
-    }
-
-    public function addCard(CardInterface $card): self {
-        $this->cards->add($card);
-        $this->cards->sort();
-        $this->selectedCardIndexes = [];
-        return $this;
-    }
-
 }

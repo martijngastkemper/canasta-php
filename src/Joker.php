@@ -18,4 +18,8 @@ final class Joker implements CardInterfAce {
         return 50;
     }
 
+    public function isJoker(): bool {
+        return true;
+    }
+
 }

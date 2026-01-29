@@ -16,6 +16,15 @@ final class Cards implements \IteratorAggregate {
         return $this;
     }
 
+    public function contains(CardInterface $card): bool {
+        foreach ($this->cards as $c) {
+            if ($c === $card) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function count(): int {
         return count($this->cards);
     }
@@ -28,13 +37,23 @@ final class Cards implements \IteratorAggregate {
         return new \ArrayIterator($this->cards);
     }
 
-    public function hasSingleRank(): bool {
-        if (empty($this->cards)) {
-            return true;
-        }
-        $firstRank = $this->cards[0]->rank;
+    /**
+     * Get a rank to 
+     */
+    public function getFirstRank(): ?Rank {
         foreach ($this->cards as $card) {
-            if ($card instanceof Joker || $card->rank === Rank::Two) {
+            if ($card->isJoker()) {
+                continue;
+            }
+            return $card->rank;
+        }
+        return null;
+    }
+
+    public function hasSingleRank(): bool {
+        $firstRank = $this->getFirstRank();
+        foreach ($this->cards as $card) {
+            if ($card->isJoker()) {
                 continue;
             }
             if ($card->rank !== $firstRank) {

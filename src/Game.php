@@ -40,7 +40,7 @@ final class Game {
     }
 
     public function playCard(): void {
-        if ($this->hand->countSelectedCards() !== 1) {
+        if ($this->hand->getSelectedCars()->count() !== 1) {
             return;
         }
         $cards = $this->hand->playSelectedCards();
@@ -54,11 +54,14 @@ final class Game {
     }
 
     public function addToTable(): void {
+        if ($this->hand->getSelectedCards()->count() < 2) {
+            return;
+        }
         $cards = $this->hand->playSelectedCards();
         $canasta = Canasta::fromCards($cards);
         $this->table->addCanasta($canasta);
 
-        $this->pendingEvents[] = new TableUpdated($this->hand->getSelectedCardIndexes());
+        $this->pendingEvents[] = new TableUpdated();
     }
 
     public function moveCursorRight(): void {
@@ -76,12 +79,12 @@ final class Game {
             $newPosition = $this->hand->getCards()->count() - 1;
         }
         $this->cursorPosition = $newPosition;
-         $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
+        $this->pendingEvents[] = new CursorMoved($this->cursorPosition);
     }
 
     public function toggleSelection(): void {
         $this->hand->selectCard($this->cursorPosition);
-        $this->pendingEvents[] = new CardSelected($this->hand->getSelectedCardIndexes());
+        $this->pendingEvents[] = new CardSelected();
     }
 
     public function flushEvents(): array {

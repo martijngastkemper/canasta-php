@@ -11,13 +11,8 @@ final class RenderGame implements EventListener {
     private Pool $pool;
     private Table $table;
     private int $cursorPosition = 0;
-    private array $selectedCardIndices = [];
 
     public function handle($event): void {
-
-        if ($event instanceof CardSelected) {
-            $this->selectedCardIndices = $event->selectedCardIndices;
-        }
 
         if ($event instanceof CursorMoved) {
             $this->cursorPosition = $event->newPosition;
@@ -29,10 +24,6 @@ final class RenderGame implements EventListener {
             $this->hand = $event->hand;
             $this->pool = $event->pool;
             $this->table = $event->table;
-        }
-
-        if ($event instanceof TableUpdated) {
-            $this->selectedCardIndices = $event->selectedCardIndices;
         }
 
         $this->render();
@@ -65,13 +56,14 @@ final class RenderGame implements EventListener {
             if ($i % 13 === 0 && $i !== 0) {
                 echo "\n\n\n";
             }
-            if (in_array($i, $this->selectedCardIndices, true)) {
+            $selected = $this->hand->isSelected($card);
+            if ($selected) {
                 move_cursor_up(1);
             }
 
             echo $cardRenderer->render($card);
 
-            if (in_array($i, $this->selectedCardIndices, true)) {
+            if ($selected) {
                 move_cursor_down(1);
             }
 

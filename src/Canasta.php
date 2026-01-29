@@ -5,17 +5,23 @@ namespace MartijnGastkemper\Canasta;
 final class Canasta {
 
     public static function fromCards(Cards $cards): self {
+        if ($cards->count() < 1) {
+            throw new \InvalidArgumentException("Provide at least one card to create a Canasta object.");
+        }
+
         if (!$cards->hasSingleRank()) {
-            throw new \InvalidArgumentException("All cards in a Canasta must have the same rank");
+            throw new \InvalidArgumentException("Provided cards with one rank to create a Canasta object.");
         }
         
-        $canasta = new self($cards, $cards->first()->rank);
+        return new self($cards, $cards->getFirstRank());
+    }
 
-        if (!$canasta->isValid()) {
-            throw new \InvalidArgumentException("The provided cards do not form a valid Canasta");
+    public static function tryFromHand(Hand $hand): ?self {
+        try {
+            return self::fromCards($hand->getCards());
+        } catch (Exception $e) {
+            return null;
         }
-
-        return $canasta;
     }
 
     public function __construct(private Cards $cards, private Rank $rank) {
@@ -28,10 +34,6 @@ final class Canasta {
         $this->cards->add($card);
     }
 
-    public function isFinished(): bool {
-        return $this->cards->count() >= 7;
-    }
-
     public function getCards(): Cards {
         return $this->cards;
     }
@@ -40,16 +42,20 @@ final class Canasta {
         return $this->rank;
     }
 
-    public function isValid(): bool {
-        // Add joker validation later
-        // - minimum of 2 non joker cards
-        // - always less jokers then non joker cards
-        return $this->cards->count() >= 3;
+    public function isFinished(): bool {
+        return $this->cards->count() >= 7;
     }
 
     public function isPure(): bool {
         // Add joker validation later
         return true;
+    }
+
+    public function isValid(): bool {
+        // Add joker validation later
+        // - minimum of 2 non joker cards
+        // - always less jokers then non joker cards
+        return $this->cards->count() >= 3;
     }
 
     public function merge(Canasta $other): void {
