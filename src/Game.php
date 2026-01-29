@@ -54,13 +54,37 @@ final class Game {
     }
 
     public function addToTable(): void {
-        if ($this->hand->getSelectedCards()->count() < 2) {
+        $selectedCards = $this->hand->getSelectedCards();
+
+        // No cards selected
+        if ($selectedCards->count() === 0) {
             return;
         }
-        $cards = $this->hand->playSelectedCards();
-        $canasta = Canasta::fromCards($cards);
-        $this->table->addCanasta($canasta);
 
+        // Multiple ranks selected
+        if (!$selectedCards->hasSingleRank()) {
+            return;
+        }
+
+        $rank = $selectedCards->getFirstRank();
+
+        $canasta = $this->table->getCanasta($rank);
+
+        if ($canasta) {
+            foreach ($selectedCards as $card) {
+                $canasta->add($card);
+            }
+        } else {
+            // Cards selected to create a new canasta
+            $canasta = $this->createCanasta($selectedCards);
+            if (!$canasta) {
+                return;
+            }
+            $this->table->addCanasta($canasta);
+        }
+        
+        $cards = $this->hand->playSelectedCards();
+        
         $this->pendingEvents[] = new TableUpdated();
     }
 
@@ -93,4 +117,22 @@ final class Game {
         return $events;
     }
 
+    private function createCanasta(Cards $cards): ?Canasta {
+        if ($cards->count() < 3) {
+            return null;
+            // throw new \InvalidArgumentException("Provide at least three cards to create a Canasta object.");
+        }
+
+        if (!$cards->hasSingleRank()) {
+            return null;
+            // throw new \InvalidArgumentException("Provided cards with one rank to create a Canasta object.");
+        }
+
+        if (!$cards->hasLessJokersThenCards()) {
+            return null;
+            // throw new \InvalidArgumentException("Canasta object must contain more cards then jokers.");
+        }
+        
+        return new Canasta($cards, $cards->getFirstRank());
+    }
 }

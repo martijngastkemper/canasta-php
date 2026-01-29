@@ -24,6 +24,15 @@ final class Table {
         return $this;
     }
 
+    public function getCanasta(Rank $rank): ?Canasta {
+        foreach ($this->canastas as $canasta) {
+            if ($canasta->getRank() === $rank) {
+                return $canasta;
+            }
+        }
+        return null;
+    }
+
     public function getCanastas(): array {
         return $this->canastas;
     }

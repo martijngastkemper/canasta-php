@@ -29,6 +29,16 @@ final class Cards implements \IteratorAggregate {
         return count($this->cards);
     }
 
+    public function countJokers(): int {
+        $jokers = 0;
+        foreach ($this->cards as $card) {
+            if ($card->isJoker()) {
+                $jokers++;
+            }
+        }
+        return $jokers;
+    }
+
     public function first(): ?CardInterface {
         return $this->cards[0] ?? null;
     }
@@ -48,6 +58,10 @@ final class Cards implements \IteratorAggregate {
             return $card->rank;
         }
         return null;
+    }
+
+    public function hasLessJokersThenCards(): bool {
+        return $this->countJokers() < count($this->cards);
     }
 
     public function hasSingleRank(): bool {

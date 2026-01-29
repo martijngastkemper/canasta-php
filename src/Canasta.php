@@ -4,26 +4,6 @@ namespace MartijnGastkemper\Canasta;
 
 final class Canasta {
 
-    public static function fromCards(Cards $cards): self {
-        if ($cards->count() < 1) {
-            throw new \InvalidArgumentException("Provide at least one card to create a Canasta object.");
-        }
-
-        if (!$cards->hasSingleRank()) {
-            throw new \InvalidArgumentException("Provided cards with one rank to create a Canasta object.");
-        }
-        
-        return new self($cards, $cards->getFirstRank());
-    }
-
-    public static function tryFromHand(Hand $hand): ?self {
-        try {
-            return self::fromCards($hand->getCards());
-        } catch (Exception $e) {
-            return null;
-        }
-    }
-
     public function __construct(private Cards $cards, private Rank $rank) {
     }
 
@@ -47,15 +27,7 @@ final class Canasta {
     }
 
     public function isPure(): bool {
-        // Add joker validation later
-        return true;
-    }
-
-    public function isValid(): bool {
-        // Add joker validation later
-        // - minimum of 2 non joker cards
-        // - always less jokers then non joker cards
-        return $this->cards->count() >= 3;
+        return $this->cards->countJokers() === 0;
     }
 
     public function merge(Canasta $other): void {
