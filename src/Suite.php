@@ -7,4 +7,5 @@ enum Suite {
     case Diamonds;
     case Clubs;
     case Spades;
+
 }

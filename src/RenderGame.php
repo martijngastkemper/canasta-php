@@ -4,6 +4,26 @@ namespace MartijnGastkemper\Canasta;
 
 use MartijnGastkemper\Canasta\set_cursor_position;
 use MartijnGastkemper\Canasta\bold;
+use PhpTui\Tui\DisplayBuilder;
+use PhpTui\Tui\Extension\Core\Shape\MapResolution;
+use PhpTui\Tui\Extension\Core\Widget\CanvasWidget;
+use PhpTui\Tui\Extension\Core\Widget\BlockWidget;
+use PhpTui\Tui\Extension\Core\Widget\GridWidget;
+use PhpTui\Tui\Layout\Constraint;
+use PhpTui\Tui\Text\Title;
+use PhpTui\Tui\Widget\Borders;
+use PhpTui\Tui\Widget\Direction;
+use PhpTui\Tui\Extension\Core\Widget\ParagraphWidget;
+use PhpTui\Tui\Extension\Core\Widget\ListWidget;
+use PhpTui\Tui\Extension\Core\Widget\TableWidget;
+use PhpTui\Tui\Text\Text;
+use PhpTui\Tui\Text\Span;
+use PhpTui\Tui\Text\Line;
+use PhpTui\Tui\Extension\Core\Widget\List\ListItem;
+use PhpTui\Tui\Extension\Core\Widget\List\ListState;
+use PhpTui\Tui\Extension\Core\Widget\Table\TableRow;
+use PhpTui\Tui\Extension\Core\Widget\Table\TableCell;
+use PhpTui\Tui\Style\Style;
 
 final class RenderGame implements EventListener {
 
@@ -19,8 +39,6 @@ final class RenderGame implements EventListener {
         }
 
         if ($event instanceof GameStarted) {
-            clear_screen();
-
             $this->hand = $event->hand;
             $this->pool = $event->pool;
             $this->table = $event->table;
@@ -30,70 +48,100 @@ final class RenderGame implements EventListener {
     }
 
     private function render() {
-        // Quick fix to remove previous rendered ANSII
-        // But when scrolling up in the terminal, the previous renderings are still visible
-        clear_screen();
-        set_cursor_position(2, 1);
-
-        $cardRenderer = new CardRenderer();
-
-        echo "Pool Top Card: " . $cardRenderer->render($this->pool->getTopCard()) . "\n\n";
-
-        echo "Table:\n";
-        foreach ($this->table->getCanastas() as $canasta) {
-            foreach ($canasta->getCards() as $card) {
-                echo $cardRenderer->render($card) . " ";
-            }
-            echo "\n";
-        }
-
-        echo "\nHand:\n\n";
-
-        // $this->eraseHand();
-
-        foreach ($this->hand->getCards() as $i => $card) {
-            // Limit the number of cards per line
-            if ($i % 13 === 0 && $i !== 0) {
-                echo "\n\n\n";
-            }
-            $selected = $this->hand->isSelected($card);
-            if ($selected) {
-                move_cursor_up(1);
-            }
-
-            echo $cardRenderer->render($card);
-
-            if ($selected) {
-                move_cursor_down(1);
-            }
-
-            if ($i === $this->cursorPosition) {
-                $this->renderCursor();
-            }
-
-        }
-        echo "\n\n";
+        $display = DisplayBuilder::default()->build();
+        $display->clear();
+        $display->draw(
+            GridWidget::default()
+                ->direction(Direction::Vertical)
+                ->constraints(
+                    Constraint::percentage(20),
+                    Constraint::percentage(40),
+                    Constraint::percentage(40),
+                )
+                ->widgets(
+                    $this->getPoolWidget(),
+                    $this->getTableWidget(),
+                    $this->getHandWidget(),
+                )
+        );
     }
 
-    private function renderCursor(): void {
-        ns_save_cursor_position();
-        move_cursor_down(1);
-        move_cursor_backward(3);
-        echo "👆";
-        ns_restore_cursor_position();
+    private function getHandWidget(): TableWidget {
+        $columns = 7;
+
+        $tableCells = array_map(fn (CardInterface $card) => new TableCell(new Text(
+            array_map(fn (string $line) => Line::fromString($line), $this->renderCard($card))
+        ), Style::default()), $this->hand->getCards()->all());
+
+        $tableRows = array_map(function (array $cards) {
+            return new TableRow(array_values($cards), 7, 0, Style::default());
+        }, array_chunk($tableCells, $columns));
+
+        return TableWidget::default()
+            ->widths(
+                ...array_fill(0, $columns, Constraint::percentage(10)),
+            )
+            ->rows(
+                ...$tableRows
+            );
+
     }
 
-    // private function eraseHand(): void {
-    //     ns_save_cursor_position();
-    //     // erase selected cards line
-    //     move_cursor_up(1);
-    //     erase_to_end_of_line();
-    //     // erase cards line
-    //     move_cursor_down(1);
-    //     erase_to_end_of_line();
-    //     // erase selected cards line
-    //     move_cursor_down(1);
-    //     erase_to_end_of_line();
-    //     ns_restore_cursor_position();
-    // }
+    private function getPoolWidget(): BlockWidget {
+        return BlockWidget::default()->borders(Borders::ALL)->titles(Title::fromString('Pool'))
+            ->widget(ParagraphWidget::fromString(
+                join("\n", $this->renderCard($this->pool->getTopCard()))
+            ));
+    }
+
+    private function getTableWidget(): GridWidget {
+        $slotWidgets = [];
+
+        foreach(Rank::cases() as $rank) {
+            if ($rank === Rank::Two) continue;
+
+            $canasta = $this->table->getCanasta($rank);
+
+            if (!$canasta) {
+                $slotWidgets[] = ParagraphWidget::fromText(new Text(
+                    array_map(fn (string $line) => Line::fromString($line), $this->template($rank->character(), ''))
+                ));
+                continue;
+            }
+
+            $slotWidgets[] = ParagraphWidget::fromString("A canasta of rank {$rank->character()}");
+        }
+
+        return GridWidget::default()
+            ->direction(Direction::Horizontal)
+            ->constraints(...array_fill(0, count($slotWidgets), Constraint::percentage(round(100 / count($slotWidgets)))))
+            ->widgets(...$slotWidgets);
+    }
+
+    private function renderCard(CardInterface $card): array {
+        if ($card instanceof Joker) {
+            return $this->template('🤡', '');
+        }
+
+        $suiteChar = match($card->suite) {
+            Suite::Clubs => '♣️',
+            Suite::Diamonds => '♦️',
+            Suite::Hearts => '♥️',
+            Suite::Spades => '♠️',
+        };
+
+        return $this->template($suiteChar, $card->rank->character());
+    }
+    
+    private function template(string $suite, string $rank): array {
+        return [
+            "┌──────┐",
+            "| " . mb_str_pad($rank, 2) . "   |",
+            "|      |",
+            "|  " . mb_str_pad($suite, 2) . "  |",
+            "|      |",
+            "|    " . mb_str_pad($rank, 2) . "|",
+            "└──────┘"
+        ];
+    }
 }
