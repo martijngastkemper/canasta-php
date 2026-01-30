@@ -13,7 +13,7 @@ final class CardRenderer {
     }
 
     public function renderTop(CardInterface $card): array {
-        return array_slice($this->renderFull($card), 0, 1);
+        return array_slice($this->renderFull($card), 0, 2);
     }
 
     public function renderLeft(CardInterface $card): array {

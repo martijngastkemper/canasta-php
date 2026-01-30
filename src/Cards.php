@@ -7,6 +7,9 @@ final class Cards implements \IteratorAggregate {
     public function __construct(private array $cards = []) {
     }
 
+    /**
+     * Remove this function, replace it with ->map() etc.
+     */
     public function all(): array {
         return $this->cards;
     }

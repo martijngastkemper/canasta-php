@@ -91,22 +91,39 @@ final class RenderGame implements EventListener {
     }
 
     private function getTableWidget(): GridWidget {
-        $slotWidgets = [];
+        $slots = [];
 
         foreach(Rank::cases() as $rank) {
             if ($rank === Rank::Two) continue;
 
             $canasta = $this->table->getCanasta($rank);
 
-            if (!$canasta) {
-                $slotWidgets[] = ParagraphWidget::fromText(new Text(
-                    array_map(fn (string $line) => Line::fromString($line), $this->cardRenderer->renderPlaceholder($rank))
-                ));
-                continue;
+            if ($canasta) {
+                $lines = [];
+                foreach($canasta->getCards() as $i => $card) {
+                    if ($i === $canasta->getCards()->count() - 1) {
+                        $lines = array_merge($lines, $this->cardRenderer->renderFull($card));
+                    } else {
+                        $lines = array_merge($lines, $this->cardRenderer->renderTop($card));
+                    }
+                }
+                $slots[] = $lines;
+            } else {
+                $slots[] =  $this->cardRenderer->renderPlaceholder($rank);
             }
-
-            $slotWidgets[] = ParagraphWidget::fromString("A canasta of rank {$rank->character()}");
         }
+
+        $slotWidgets = array_map(
+            fn ($lines) => ParagraphWidget::fromText(
+                new Text(
+                    array_map(
+                        fn (string $line) => Line::fromString($line), 
+                        $lines
+                    )
+                ),
+            ), 
+            $slots
+        );
 
         return GridWidget::default()
             ->direction(Direction::Horizontal)
