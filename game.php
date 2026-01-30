@@ -22,15 +22,21 @@ use PhpTui\Term\Actions;
 use PhpTui\Term\ClearType;
 use PhpTui\Term\Event\CharKeyEvent;
 use PhpTui\Term\Event\CodedKeyEvent;
+use PhpTui\Term\Event\MouseEvent;
+use PhpTui\Term\MouseEventKind;
 
 $terminal = Terminal::new();
-
 
 $dispatcher = new Dispatcher(
     [new RenderGame(DisplayBuilder::default(PhpTermBackend::new($terminal)))]
 );
 
 try {
+    // hide the cursor
+    $terminal->execute(Actions::cursorHide());
+    // switch to the "alternate" screen so that we can return the user where they left off
+    $terminal->execute(Actions::alternateScreenEnable());
+    // $terminal->execute(Actions::enableMouseCapture());
     $terminal->enableRawMode();
 
     $game = Game::start();
@@ -48,14 +54,20 @@ try {
                     $game->drawPool();
                 } else if ($event->char === 's') {
                     $game->toggleSelection();
-                } else if ($event->char === "\n") {
+                } else if ($event->char === 'q') {
+                    echo "\nQuitting game.\n";
+                    break 2;
+                }
+            } else if ($event instanceof CodedKeyEvent) {
+                if ($event->code === KeyCode::Enter) {
                     // Play selected card
                     // $game->playCard();
                     // Play selected cards
                     $game->addToTable();
-                } else if ($event->char === 'q') {
-                    echo "\nQuitting game.\n";
-                    break 2;
+                } else if ($event->code === KeyCode::Left) {
+                    $game->moveCursorLeft();
+                } else if ($event->code === KeyCode::Right) {
+                    $game->moveCursorRight();
                 }
             }
         }
@@ -64,6 +76,8 @@ try {
     }
 } finally {
     $terminal->disableRawMode();
+    $terminal->execute(Actions::disableMouseCapture());
     $terminal->execute(Actions::alternateScreenDisable());
+    $terminal->execute(Actions::cursorShow());
     $terminal->execute(Actions::clear(ClearType::All));   
 }

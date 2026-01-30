@@ -36,7 +36,10 @@ final class RenderGame implements EventListener {
     private Display $display;
 
     public function __construct(DisplayBuilder $displayBuilder) {
-        $this->display = $displayBuilder->fullscreen()->build();
+        $this->display = $displayBuilder
+            ->fullscreen()
+            ->addWidgetRenderer(new HandWidgetRenderer())
+            ->build();
     }
 
     public function handle($event): void {
@@ -73,25 +76,8 @@ final class RenderGame implements EventListener {
         );
     }
 
-    private function getHandWidget(): TableWidget {
-        $columns = 7;
-
-        $tableCells = array_map(fn (CardInterface $card) => new TableCell(new Text(
-            array_map(fn (string $line) => Line::fromString($line), $this->renderCard($card))
-        ), Style::default()), $this->hand->getCards()->all());
-
-        $tableRows = array_map(function (array $cards) {
-            return new TableRow(array_values($cards), 7, 0, Style::default());
-        }, array_chunk($tableCells, $columns));
-
-        return TableWidget::default()
-            ->widths(
-                ...array_fill(0, $columns, Constraint::percentage(10)),
-            )
-            ->rows(
-                ...$tableRows
-            );
-
+    private function getHandWidget(): HandWidget {
+        return new HandWidget($this->cursorPosition, $this->hand);
     }
 
     private function getPoolWidget(): BlockWidget {
