@@ -5,6 +5,7 @@ namespace MartijnGastkemper\Canasta;
 use MartijnGastkemper\Canasta\set_cursor_position;
 use MartijnGastkemper\Canasta\bold;
 use PhpTui\Tui\DisplayBuilder;
+use PhpTui\Tui\Display\Display;
 use PhpTui\Tui\Extension\Core\Shape\MapResolution;
 use PhpTui\Tui\Extension\Core\Widget\CanvasWidget;
 use PhpTui\Tui\Extension\Core\Widget\BlockWidget;
@@ -24,6 +25,7 @@ use PhpTui\Tui\Extension\Core\Widget\List\ListState;
 use PhpTui\Tui\Extension\Core\Widget\Table\TableRow;
 use PhpTui\Tui\Extension\Core\Widget\Table\TableCell;
 use PhpTui\Tui\Style\Style;
+use PhpTui\Term\Terminal;
 
 final class RenderGame implements EventListener {
 
@@ -31,6 +33,11 @@ final class RenderGame implements EventListener {
     private Pool $pool;
     private Table $table;
     private int $cursorPosition = 0;
+    private Display $display;
+
+    public function __construct(DisplayBuilder $displayBuilder) {
+        $this->display = $displayBuilder->fullscreen()->build();
+    }
 
     public function handle($event): void {
 
@@ -48,7 +55,7 @@ final class RenderGame implements EventListener {
     }
 
     private function render() {
-        $display = DisplayBuilder::default()->build();
+        $display = $this->display;
         $display->clear();
         $display->draw(
             GridWidget::default()
