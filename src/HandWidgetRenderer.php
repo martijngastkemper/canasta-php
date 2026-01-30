@@ -18,13 +18,13 @@ final class HandWidgetRenderer implements WidgetRenderer {
             return;
         }
 
+        $cardRenderer = new CardRenderer();
+
         $x = $area->left();
         $y = $area->top();
-        $cardWidth = mb_strlen($this->template('', '')[0]);
-        $cardHeight = count($this->template('', ''));
 
         foreach ($widget->hand->getCards() as $cardIndex => $card) {
-            $cardLines = $this->renderCard($card);
+            $cardLines = $cardRenderer->renderFull($card);
             foreach ($cardLines as $i => $line) {
                 if (!$widget->hand->isSelected($card)) $i += 1;
 
@@ -32,43 +32,16 @@ final class HandWidgetRenderer implements WidgetRenderer {
             }
 
             if ($widget->cursorPosition === $cardIndex) {
-                $buffer->putString(Position::at($x + round($cardWidth / 2) - 1, $y + $cardHeight + 2), "👆");
+                $buffer->putString(Position::at($x + round($cardRenderer->getWidth() / 2) - 1, $y + $cardRenderer->getHeight() + 2), "👆");
             }
 
-            $x += $cardWidth + 1;
+            $x += $cardRenderer->getWidth() + 1;
 
             if ($x > $area->right()) {
                 $x = $area->left();
-                $y += $cardHeight + 2;
+                $y += $cardRenderer->getHeight() + 2;
             }
         }
-    }
-
-    private function renderCard(CardInterface $card): array {
-        if ($card instanceof Joker) {
-            return $this->template('🤡', '');
-        }
-
-        $suiteChar = match($card->suite) {
-            Suite::Clubs => '♣️',
-            Suite::Diamonds => '♦️',
-            Suite::Hearts => '♥️',
-            Suite::Spades => '♠️',
-        };
-
-        return $this->template($suiteChar, $card->rank->character());
-    }
-
-    private function template(string $suite, string $rank): array {
-        return [
-            "┌──────┐",
-            "| " . mb_str_pad($rank, 2) . "   |",
-            "|      |",
-            "|  " . mb_str_pad($suite, 2) . "  |",
-            "|      |",
-            "|    " . mb_str_pad($rank, 2) . "|",
-            "└──────┘"
-        ];
     }
 
 }

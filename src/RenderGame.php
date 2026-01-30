@@ -34,12 +34,15 @@ final class RenderGame implements EventListener {
     private Table $table;
     private int $cursorPosition = 0;
     private Display $display;
+    private CardRenderer $cardRenderer;
 
     public function __construct(DisplayBuilder $displayBuilder) {
         $this->display = $displayBuilder
             ->fullscreen()
             ->addWidgetRenderer(new HandWidgetRenderer())
             ->build();
+
+        $this->cardRenderer = new CardRenderer();
     }
 
     public function handle($event): void {
@@ -83,7 +86,7 @@ final class RenderGame implements EventListener {
     private function getPoolWidget(): BlockWidget {
         return BlockWidget::default()->borders(Borders::ALL)->titles(Title::fromString('Pool'))
             ->widget(ParagraphWidget::fromString(
-                join("\n", $this->renderCard($this->pool->getTopCard()))
+                join("\n", $this->cardRenderer->renderFull($this->pool->getTopCard()))
             ));
     }
 
@@ -97,7 +100,7 @@ final class RenderGame implements EventListener {
 
             if (!$canasta) {
                 $slotWidgets[] = ParagraphWidget::fromText(new Text(
-                    array_map(fn (string $line) => Line::fromString($line), $this->template($rank->character(), ''))
+                    array_map(fn (string $line) => Line::fromString($line), $this->cardRenderer->renderPlaceholder($rank))
                 ));
                 continue;
             }
@@ -109,32 +112,5 @@ final class RenderGame implements EventListener {
             ->direction(Direction::Horizontal)
             ->constraints(...array_fill(0, count($slotWidgets), Constraint::percentage(round(100 / count($slotWidgets)))))
             ->widgets(...$slotWidgets);
-    }
-
-    private function renderCard(CardInterface $card): array {
-        if ($card instanceof Joker) {
-            return $this->template('🤡', '');
-        }
-
-        $suiteChar = match($card->suite) {
-            Suite::Clubs => '♣️',
-            Suite::Diamonds => '♦️',
-            Suite::Hearts => '♥️',
-            Suite::Spades => '♠️',
-        };
-
-        return $this->template($suiteChar, $card->rank->character());
-    }
-    
-    private function template(string $suite, string $rank): array {
-        return [
-            "┌──────┐",
-            "| " . mb_str_pad($rank, 2) . "   |",
-            "|      |",
-            "|  " . mb_str_pad($suite, 2) . "  |",
-            "|      |",
-            "|    " . mb_str_pad($rank, 2) . "|",
-            "└──────┘"
-        ];
     }
 }
