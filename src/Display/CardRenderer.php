@@ -1,6 +1,11 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Display;
+
+use MartijnGastkemper\Canasta\CardInterface;
+use MartijnGastkemper\Canasta\Joker;
+use MartijnGastkemper\Canasta\Rank;
+use MartijnGastkemper\Canasta\Suite;
 
 final class CardRenderer {
 

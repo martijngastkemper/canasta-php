@@ -1,6 +1,6 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Events;
 
 final class CursorMoved {
 

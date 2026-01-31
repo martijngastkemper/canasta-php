@@ -2,6 +2,13 @@
 
 namespace MartijnGastkemper\Canasta;
 
+use MartijnGastkemper\Canasta\Events\CardPlayed;
+use MartijnGastkemper\Canasta\Events\CardSelected;
+use MartijnGastkemper\Canasta\Events\CursorMoved;
+use MartijnGastkemper\Canasta\Events\DrewCard;
+use MartijnGastkemper\Canasta\Events\GameStarted;
+use MartijnGastkemper\Canasta\Events\TableUpdated;
+
 final class Game {
 
     public Deck $deck;

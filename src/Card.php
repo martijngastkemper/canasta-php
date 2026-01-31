@@ -3,6 +3,7 @@
 namespAce MartijnGastkemper\Canasta;
 
 final class Card implements CardInterface {
+    
     public function __construct(public readonly Suite $suite, public readonly Rank $rank) {}
 
     public function getOrderByWeight(): int {

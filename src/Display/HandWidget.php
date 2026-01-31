@@ -1,7 +1,8 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Display;
 
+use MartijnGastkemper\Canasta\Hand;
 use PhpTui\Tui\Display\Area;
 use PhpTui\Tui\Display\Buffer;
 use PhpTui\Tui\DisplayBuilder;
@@ -14,6 +15,5 @@ final class HandWidget implements Widget {
     public function __construct(public readonly int $cursorPosition, public readonly Hand $hand) {
 
     }
-
 
 }

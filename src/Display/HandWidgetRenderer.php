@@ -1,8 +1,8 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Display;
 
-
+use MartijnGastkemper\Canasta\Suite;
 use PhpTui\Tui\Display\Area;
 use PhpTui\Tui\Display\Buffer;
 use PhpTui\Tui\DisplayBuilder;

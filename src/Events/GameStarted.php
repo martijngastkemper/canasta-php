@@ -1,6 +1,10 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Events;
+
+use MartijnGastkemper\Canasta\Hand;
+use MartijnGastkemper\Canasta\Pool;
+use MartijnGastkemper\Canasta\Table;
 
 final class GameStarted {
 

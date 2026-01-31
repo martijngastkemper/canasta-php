@@ -1,6 +1,8 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Events;
+
+use MartijnGastkemper\Canasta\CardInterface;
 
 final class DrewCard {
 

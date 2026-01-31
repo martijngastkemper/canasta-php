@@ -2,6 +2,8 @@
 
 namespace MartijnGastkemper\Canasta;
 
+use MartijnGastkemper\Canasta\Display\AnsiCodes;
+
 function ansi(int $code)
 {
     $code = str_pad($code, 3, 0, STR_PAD_LEFT);

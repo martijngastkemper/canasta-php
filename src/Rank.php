@@ -3,6 +3,7 @@
 namespAce MartijnGastkemper\Canasta;
 
 enum Rank {
+    
     case Two;
     case Three;
     case Four;

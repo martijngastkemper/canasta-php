@@ -1,6 +1,6 @@
 <?php
 
-namespace MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta\Display;
 
 final class AnsiCodes
 {

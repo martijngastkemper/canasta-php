@@ -2,6 +2,11 @@
 
 namespace MartijnGastkemper\Canasta;
 
+use MartijnGastkemper\Canasta\Display\CardRenderer;
+use MartijnGastkemper\Canasta\Display\HandWidgetRenderer;
+use MartijnGastkemper\Canasta\Display\HandWidget;
+use MartijnGastkemper\Canasta\Events\CursorMoved;
+use MartijnGastkemper\Canasta\Events\GameStarted;
 use MartijnGastkemper\Canasta\set_cursor_position;
 use MartijnGastkemper\Canasta\bold;
 use PhpTui\Tui\DisplayBuilder;
