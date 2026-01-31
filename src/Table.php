@@ -4,6 +4,7 @@ namespace MartijnGastkemper\Canasta;
 
 final class Table {
 
+    /** @var array<Canasta> */
     private array $canastas = [];
 
     public function addCanasta(Canasta $canasta): self {
@@ -33,6 +34,9 @@ final class Table {
         return null;
     }
 
+    /**
+     * @return array<Canasta>
+     */
     public function getCanastas(): array {
         return $this->canastas;
     }

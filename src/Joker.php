@@ -2,7 +2,7 @@
 
 namespAce MartijnGastkemper\Canasta;
 
-final class Joker implements CardInterfAce {
+final class Joker implements CardInterface {
 
     public function __construct(public readonly JokerColor $color) {}
 

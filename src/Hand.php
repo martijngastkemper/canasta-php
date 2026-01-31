@@ -4,6 +4,9 @@ namespace MartijnGastkemper\Canasta;
 
 final class Hand {
 
+    /**
+     * @var array<int>
+     */
     private array $selectedCardIndexes = [];
 
     public function __construct(private Cards $cards) {}

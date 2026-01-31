@@ -8,7 +8,12 @@ final class Canasta {
     }
 
     public function add(CardInterface $card): void {
-        if ($card->rank !== $this->rank) {
+        if ($card->isJoker()) {
+            if ($this->getCards()->count() > $this->getCards()->countJokers() + 1){
+                throw new \InvalidArgumentException("Canasta must contain more cards then jokers.");
+            }
+        }
+        if ($card instanceof Card && $card->rank !== $this->rank) {
             throw new \InvalidArgumentException("Card rank does not match Canasta rank");
         }
         $this->cards->add($card);

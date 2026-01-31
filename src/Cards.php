@@ -2,13 +2,21 @@
 
 namespace MartijnGastkemper\Canasta;
 
+/**
+ * @implements \IteratorAggregate<int, CardInterface>
+ */
 final class Cards implements \IteratorAggregate {
 
+    /**
+     * @param array<int, CardInterface> $cards
+     */
     public function __construct(private array $cards = []) {
     }
 
     /**
      * Remove this function, replace it with ->map() etc.
+     * 
+     * @return array<int, CardInterface>
      */
     public function all(): array {
         return $this->cards;

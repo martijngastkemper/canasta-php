@@ -65,7 +65,7 @@ final class RenderGame implements EventListener {
         $this->render();
     }
 
-    private function render() {
+    private function render(): void {
         $display = $this->display;
         $display->clear();
         $display->draw(
@@ -89,9 +89,13 @@ final class RenderGame implements EventListener {
     }
 
     private function getPoolWidget(): BlockWidget {
+        $topCard = $this->pool->getTopCard();
+
+        $rendered = $topCard ? $this->cardRenderer->renderFull($topCard) : $this->cardRenderer->renderPlaceHolder();
+  
         return BlockWidget::default()->borders(Borders::ALL)->titles(Title::fromString('Pool'))
             ->widget(ParagraphWidget::fromString(
-                join("\n", $this->cardRenderer->renderFull($this->pool->getTopCard()))
+                join("\n", $rendered)
             ));
     }
 

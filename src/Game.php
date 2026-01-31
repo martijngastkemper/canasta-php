@@ -47,7 +47,7 @@ final class Game {
     }
 
     public function playCard(): void {
-        if ($this->hand->getSelectedCars()->count() !== 1) {
+        if ($this->hand->getSelectedCards()->count() !== 1) {
             return;
         }
         $cards = $this->hand->playSelectedCards();

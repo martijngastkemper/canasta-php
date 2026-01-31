@@ -3,34 +3,61 @@
 namespace MartijnGastkemper\Canasta\Display;
 
 use MartijnGastkemper\Canasta\CardInterface;
+use MartijnGastkemper\Canasta\Card;
 use MartijnGastkemper\Canasta\Joker;
 use MartijnGastkemper\Canasta\Rank;
 use MartijnGastkemper\Canasta\Suite;
 
 final class CardRenderer {
 
+    /**
+     * @return array<string>
+     */
     public function renderFull(CardInterface $card): array {
         if ($card instanceof Joker) {
             return $this->template('🤡', '');
         }
 
-        return $this->template($this->getSuiteChar($card), $card->rank->character());
+        if ($card instanceof Card) {
+            $suiteChar = match($card->suite) {
+                Suite::Clubs => '♣️',
+                Suite::Diamonds => '♦️',
+                Suite::Hearts => '♥️',
+                Suite::Spades => '♠️',
+            };
+
+            return $this->template($suiteChar, $card->rank->character());
+        }
+
+        throw new \InvalidArgumentException("Unsupported card class given.");
     }
 
+    /**
+     * @return array<string>
+     */
     public function renderTop(CardInterface $card): array {
         return array_slice($this->renderFull($card), 0, 2);
     }
 
+    /**
+     * @return array<string>
+     */
     public function renderLeft(CardInterface $card): array {
         return array_map(fn (string $line) => mb_substr($line, 0, 1), $this->renderFull($card));
     }
 
-    public function renderPlaceHolder(Rank $rank): array {
-        return $this->template($rank->character(), '');
+    /**
+     * @return array<string>
+     */
+    public function renderPlaceHolder(?Rank $rank = null): array {
+        return $this->template($rank ? $rank->character() : '', '');
     }
 
+    /**
+     * @return array<string>
+     */
     public function renderBackside(): array {
-        return $this->renderFull('-', '-');
+        return $this->template('-', '-');
     }
 
     public function getHeight(): int {
@@ -41,19 +68,9 @@ final class CardRenderer {
         return mb_strlen($this->template('', '')[0]);
     }
 
-    private function renderCard(CardInterface $card): array {
-        
-    }
-
-    private function getSuiteChar(CardInterface $card): string {
-        return match($card->suite) {
-            Suite::Clubs => '♣️',
-            Suite::Diamonds => '♦️',
-            Suite::Hearts => '♥️',
-            Suite::Spades => '♠️',
-        };
-    }
-
+    /**
+     * @return array<string>
+     */
     private function template(string $suite, string $rank): array {
         return [
             "┌──────┐",
