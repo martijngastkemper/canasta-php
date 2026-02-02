@@ -2,7 +2,7 @@
 
 namespace MartijnGastkemper\Canasta;
 
-use MartijnGastkemper\Canasta\Display\CardRenderer;
+use MartijnGastkemper\Canasta\Display\AnsiCard;
 use MartijnGastkemper\Canasta\Display\HandWidgetRenderer;
 use MartijnGastkemper\Canasta\Display\HandWidget;
 use MartijnGastkemper\Canasta\Events\CursorMoved;
@@ -31,6 +31,7 @@ use PhpTui\Tui\Extension\Core\Widget\Table\TableRow;
 use PhpTui\Tui\Extension\Core\Widget\Table\TableCell;
 use PhpTui\Tui\Style\Style;
 use PhpTui\Term\Terminal;
+use PhpTui\Tui\Widget\Widget;
 
 final class RenderGame implements EventListener {
 
@@ -39,15 +40,12 @@ final class RenderGame implements EventListener {
     private Table $table;
     private int $cursorPosition = 0;
     private Display $display;
-    private CardRenderer $cardRenderer;
 
     public function __construct(DisplayBuilder $displayBuilder) {
         $this->display = $displayBuilder
             ->fullscreen()
             ->addWidgetRenderer(new HandWidgetRenderer())
             ->build();
-
-        $this->cardRenderer = new CardRenderer();
     }
 
     public function handle($event): void {
@@ -84,22 +82,41 @@ final class RenderGame implements EventListener {
         );
     }
 
-    private function getHandWidget(): HandWidget {
+    private function getHandWidget(): Widget {
         return new HandWidget($this->cursorPosition, $this->hand);
     }
 
-    private function getPoolWidget(): BlockWidget {
+    private function getPoolWidget(): Widget {
         $topCard = $this->pool->getTopCard();
 
-        $rendered = $topCard ? $this->cardRenderer->renderFull($topCard) : $this->cardRenderer->renderPlaceHolder();
-  
-        return BlockWidget::default()->borders(Borders::ALL)->titles(Title::fromString('Pool'))
-            ->widget(ParagraphWidget::fromString(
-                join("\n", $rendered)
-            ));
+        $deckCard = AnsiCard::backside();
+
+        $poolCard = null;
+
+        if (!$topCard) {
+            $poolCard = AnsiCard::placeholder();
+        } else {
+            // Show extra lines when the pool has 2 or more cards
+            $poolCard = AnsiCard::fromCard($topCard);
+        }
+
+        return GridWidget::default()
+            ->direction(Direction::Horizontal)
+            ->constraints(
+                Constraint::min($deckCard->getWidth()),
+                Constraint::min(2),
+            )
+            ->widgets(
+                ParagraphWidget::fromString(
+                    $deckCard
+                ),
+                ParagraphWidget::fromString(
+                    $poolCard
+                )
+            );
     }
 
-    private function getTableWidget(): GridWidget {
+    private function getTableWidget(): Widget {
         $slots = [];
 
         foreach(Rank::cases() as $rank) {
@@ -111,14 +128,14 @@ final class RenderGame implements EventListener {
                 $lines = [];
                 foreach($canasta->getCards() as $i => $card) {
                     if ($i === $canasta->getCards()->count() - 1) {
-                        $lines = array_merge($lines, $this->cardRenderer->renderFull($card));
+                        $lines = array_merge($lines, AnsiCard::fromCard($card)->full()->getRawLines());
                     } else {
-                        $lines = array_merge($lines, $this->cardRenderer->renderTop($card));
+                        $lines = array_merge($lines, AnsiCard::fromCard($card)->top()->getRawLines());
                     }
                 }
                 $slots[] = $lines;
             } else {
-                $slots[] =  $this->cardRenderer->renderPlaceholder($rank);
+                $slots[] =  AnsiCard::fromRank($rank)->getRawLines();
             }
         }
 

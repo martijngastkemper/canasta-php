@@ -18,28 +18,26 @@ final class HandWidgetRenderer implements WidgetRenderer {
             return;
         }
 
-        $cardRenderer = new CardRenderer();
-
         $x = $area->left();
         $y = $area->top();
 
         foreach ($widget->hand->getCards() as $cardIndex => $card) {
-            $cardLines = $cardRenderer->renderFull($card);
-            foreach ($cardLines as $i => $line) {
+            $ansiCard = AnsiCard::fromCard($card);
+            foreach ($ansiCard->getRawLines() as $i => $line) {
                 if (!$widget->hand->isSelected($card)) $i += 1;
 
                 $buffer->putString(Position::at($x, $y + $i), $line);
             }
 
             if ($widget->cursorPosition === $cardIndex) {
-                $buffer->putString(Position::at($x + round($cardRenderer->getWidth() / 2) - 1, $y + $cardRenderer->getHeight() + 2), "👆");
+                $buffer->putString(Position::at($x + round($ansiCard->getWidth() / 2) - 1, $y + $ansiCard->getHeight() + 2), "👆");
             }
 
-            $x += $cardRenderer->getWidth() + 1;
+            $x += $ansiCard->getWidth() + 1;
 
             if ($x > $area->right()) {
                 $x = $area->left();
-                $y += $cardRenderer->getHeight() + 2;
+                $y += $ansiCard->getHeight() + 2;
             }
         }
     }
