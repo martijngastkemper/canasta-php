@@ -43,4 +43,8 @@ final class Canasta {
             $this->add($card);
         }
     }
+
+    public function sort(): void {
+        $this->cards->sort();
+    }
 }

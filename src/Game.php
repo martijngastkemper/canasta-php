@@ -78,6 +78,7 @@ final class Game {
         $canasta = $this->table->getCanasta($rank);
 
         if ($canasta) {
+            $canasta->sort();
             foreach ($selectedCards as $card) {
                 $canasta->add($card);
             }
@@ -87,6 +88,7 @@ final class Game {
             if (!$canasta) {
                 return;
             }
+            $canasta->sort();
             $this->table->addCanasta($canasta);
         }
         
