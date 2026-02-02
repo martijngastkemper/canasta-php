@@ -80,6 +80,9 @@ final class Cards implements \IteratorAggregate {
     public function hasSingleRank(): bool {
         $firstRank = $this->getFirstRank();
         foreach ($this->cards as $card) {
+            if ($card->isJoker()) {
+                continue;
+            }
             if ($card instanceof Card and $card->rank !== $firstRank) {
                 return false;
             }
