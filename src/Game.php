@@ -33,7 +33,7 @@ final class Game {
     }
 
     public function nextPlayer(): void {
-        
+
     }
 
     public function drawCard(): void {
@@ -91,9 +91,9 @@ final class Game {
             $canasta->sort();
             $this->table->addCanasta($canasta);
         }
-        
+
         $cards = $this->hand->playSelectedCards();
-        
+
         $this->pendingEvents[] = new TableUpdated();
     }
 
@@ -144,7 +144,7 @@ final class Game {
 
         // Handle three of hearts and diamonds => not allowed to, shouldn't be available here.
         // Handle threes of club and spades => only allowed when finishing the round.
-        
+
         return new Canasta($cards, $cards->getFirstRank());
     }
 }

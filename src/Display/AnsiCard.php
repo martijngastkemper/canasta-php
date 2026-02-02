@@ -11,7 +11,7 @@ use MartijnGastkemper\Canasta\Suite;
 final class AnsiCard {
 
     /** @var array<string> $lines */
-    private array $lines = [];
+    private array $lines;
 
     public static function backside(): self {
         return new self('-', '-');
@@ -23,7 +23,7 @@ final class AnsiCard {
         }
 
         if ($card instanceof Card) {
-            $suiteChar = match($card->suite) {
+            $suiteChar = match ($card->suite) {
                 Suite::Clubs => '♣️',
                 Suite::Diamonds => '♦️',
                 Suite::Hearts => '♥️',
@@ -32,7 +32,7 @@ final class AnsiCard {
 
             return new self($suiteChar, $card->rank->character());
         }
-        
+
         throw new \InvalidArgumentException("Provided CardInterface class isn't supported.");
     }
 
@@ -57,6 +57,9 @@ final class AnsiCard {
         return count($this->lines);
     }
 
+    /**
+     * @return string[]
+     */
     public function getRawLines(): array {
         return $this->lines;
     }
@@ -66,7 +69,7 @@ final class AnsiCard {
     }
 
     public function left(): self {
-        $this->lines = array_map(fn (string $line) => mb_substr($line, 0, 1), $this->lines($this->middleChar, $this->topChar));
+        $this->lines = array_map(fn(string $line) => mb_substr($line, 0, 1), $this->lines($this->middleChar, $this->topChar));
         return $this;
     }
 

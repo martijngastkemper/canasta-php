@@ -2,8 +2,7 @@
 
 namespace MartijnGastkemper\Canasta\Display;
 
-final class AnsiCodes
-{
+final class AnsiCodes {
     public static int $off = 0;
     public static int $bold = 1;
     public static int $italic = 3;

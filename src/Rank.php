@@ -1,9 +1,9 @@
 <?php
 
-namespAce MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta;
 
 enum Rank {
-    
+
     case Two;
     case Three;
     case Four;

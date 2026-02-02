@@ -2,6 +2,8 @@
 
 namespace MartijnGastkemper\Canasta;
 
+use ArrayIterator;
+
 /**
  * @implements \IteratorAggregate<int, CardInterface>
  */
@@ -15,7 +17,7 @@ final class Cards implements \IteratorAggregate {
 
     /**
      * Remove this function, replace it with ->map() etc.
-     * 
+     *
      * @return array<int, CardInterface>
      */
     public function all(): array {
@@ -55,15 +57,15 @@ final class Cards implements \IteratorAggregate {
     }
 
     public function getIterator(): \Traversable {
-        return new \ArrayIterator($this->cards);
+        return new ArrayIterator($this->cards);
     }
 
     /**
-     * Get a rank to 
+     * Get a rank to
      */
     public function getFirstRank(): ?Rank {
         foreach ($this->cards as $card) {
-            if ($card->isJoker()) {
+            if ($card->isJoker() or !$card instanceof Card) {
                 continue;
             }
             return $card->rank;
@@ -78,16 +80,16 @@ final class Cards implements \IteratorAggregate {
     public function hasSingleRank(): bool {
         $firstRank = $this->getFirstRank();
         foreach ($this->cards as $card) {
-            if ($card->isJoker()) {
-                continue;
-            }
-            if ($card->rank !== $firstRank) {
+            if ($card instanceof Card and $card->rank !== $firstRank) {
                 return false;
             }
         }
         return true;
     }
 
+    /**
+     * @param array<int, int> $indexes
+     */
     public function only(array $indexes): self {
         $pickedCards = [];
         foreach ($indexes as $index) {
@@ -102,15 +104,32 @@ final class Cards implements \IteratorAggregate {
         return array_pop($this->cards) ?: null;
     }
 
+    /**
+     * @param array<int, int> $indexes
+     */
     public function forget(array $indexes): self {
         foreach ($indexes as $position) {
             if (isset($this->cards[$position])) {
-                unset($this->cards[$position]);   
+                unset($this->cards[$position]);
             }
         }
         // Reindex the cards array
         $this->cards = array_values($this->cards);
         return $this;
+    }
+
+    /**
+     * @template T
+     * @param T $initial
+     * @return T
+     */
+    public function reduce(callable $callable, $initial) {
+        $result = $initial;
+
+        foreach ($this->cards as $key => $card) {
+            $result = $callable($result, $card, $key);
+        }
+        return $result;
     }
 
     public function shuffle(): self {

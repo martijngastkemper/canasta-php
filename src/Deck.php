@@ -1,14 +1,14 @@
 <?php
 
-namespAce MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta;
 
 final class Deck {
 
-    
+
     private function __construct(private Cards $cards) {
-        
+
     }
-    
+
     public static function create(): Deck {
         $cards = [];
         foreach (Suite::cases() as $suite) {

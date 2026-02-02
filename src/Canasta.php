@@ -9,7 +9,7 @@ final class Canasta {
 
     public function add(CardInterface $card): void {
         if ($card->isJoker()) {
-            if ($this->getCards()->count() > $this->getCards()->countJokers() + 1){
+            if ($this->getCards()->count() > $this->getCards()->countJokers() + 1) {
                 throw new \InvalidArgumentException("Canasta must contain more cards then jokers.");
             }
         }

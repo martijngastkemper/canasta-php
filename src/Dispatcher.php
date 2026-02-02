@@ -4,7 +4,8 @@ namespace MartijnGastkemper\Canasta;
 
 final class Dispatcher {
 
-    public function __construct(private array $listeners = []) {}
+    public function __construct(private array $listeners = []) {
+    }
 
     public function dispatch(array $events): void {
         foreach ($this->listeners as $listener) {

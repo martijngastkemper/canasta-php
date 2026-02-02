@@ -1,10 +1,11 @@
 <?php
 
-namespAce MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta;
 
 final class Joker implements CardInterface {
 
-    public function __construct(public readonly JokerColor $color) {}
+    public function __construct(public readonly JokerColor $color) {
+    }
 
     public function getOrderByWeight(): int {
         return 0;

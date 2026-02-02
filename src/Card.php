@@ -1,10 +1,11 @@
 <?php
 
-namespAce MartijnGastkemper\Canasta;
+namespace MartijnGastkemper\Canasta;
 
 final class Card implements CardInterface {
 
-    public function __construct(public readonly Suite $suite, public readonly Rank $rank) {}
+    public function __construct(public readonly Suite $suite, public readonly Rank $rank) {
+    }
 
     public function getOrderByWeight(): int {
         return match ($this->rank) {
@@ -27,7 +28,7 @@ final class Card implements CardInterface {
     public function getValue(): int {
         return match ($this->rank) {
             Rank::Ace, Rank::Two => 20,
-            Rank::Three => (fn () => $this->suite === Suite::Hearts || $this->suite === Suite::Diamonds ? 100 : 5)(),
+            Rank::Three => (fn() => $this->suite === Suite::Hearts || $this->suite === Suite::Diamonds ? 100 : 5)(),
             Rank::Four, Rank::Five, Rank::Six, Rank::Seven => 5,
             Rank::Eight, Rank::Nine, Rank::Ten, Rank::Jack, Rank::Queen, Rank::King => 10,
         };

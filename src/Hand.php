@@ -9,7 +9,8 @@ final class Hand {
      */
     private array $selectedCardIndexes = [];
 
-    public function __construct(private Cards $cards) {}
+    public function __construct(private Cards $cards) {
+    }
 
     public static function createFromDeck(Deck $deck, int $numberOfCards): Hand {
         $cards = [];
@@ -54,7 +55,7 @@ final class Hand {
             $this->selectedCardIndexes[] = $position;
         }
     }
-    
+
     private function resetSelectedCards(): void {
         $this->selectedCardIndexes = [];
     }
