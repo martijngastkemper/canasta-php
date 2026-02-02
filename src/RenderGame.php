@@ -1,40 +1,22 @@
-<?php 
+<?php
 
 namespace MartijnGastkemper\Canasta;
 
 use MartijnGastkemper\Canasta\Display\AnsiCard;
+use MartijnGastkemper\Canasta\Display\AnsiStack;
 use MartijnGastkemper\Canasta\Display\HandWidgetRenderer;
 use MartijnGastkemper\Canasta\Display\HandWidget;
 use MartijnGastkemper\Canasta\Events\CursorMoved;
 use MartijnGastkemper\Canasta\Events\GameStarted;
-use MartijnGastkemper\Canasta\set_cursor_position;
-use MartijnGastkemper\Canasta\bold;
 use PhpTui\Tui\DisplayBuilder;
 use PhpTui\Tui\Display\Display;
-use PhpTui\Tui\Extension\Core\Shape\MapResolution;
-use PhpTui\Tui\Extension\Core\Widget\CanvasWidget;
-use PhpTui\Tui\Extension\Core\Widget\BlockWidget;
 use PhpTui\Tui\Extension\Core\Widget\GridWidget;
 use PhpTui\Tui\Layout\Constraint;
-use PhpTui\Tui\Text\Title;
-use PhpTui\Tui\Widget\Borders;
 use PhpTui\Tui\Widget\Direction;
 use PhpTui\Tui\Extension\Core\Widget\ParagraphWidget;
-use PhpTui\Tui\Extension\Core\Widget\ListWidget;
-use PhpTui\Tui\Extension\Core\Widget\TableWidget;
-use PhpTui\Tui\Text\Text;
-use PhpTui\Tui\Text\Span;
-use PhpTui\Tui\Text\Line;
-use PhpTui\Tui\Extension\Core\Widget\List\ListItem;
-use PhpTui\Tui\Extension\Core\Widget\List\ListState;
-use PhpTui\Tui\Extension\Core\Widget\Table\TableRow;
-use PhpTui\Tui\Extension\Core\Widget\Table\TableCell;
-use PhpTui\Tui\Style\Style;
-use PhpTui\Term\Terminal;
 use PhpTui\Tui\Widget\Widget;
 
 final class RenderGame implements EventListener {
-
     private Hand $hand;
     private Pool $pool;
     private Table $table;
@@ -117,43 +99,36 @@ final class RenderGame implements EventListener {
     }
 
     private function getTableWidget(): Widget {
-        $slots = [];
+        /** @var array<int, ParagraphWidget> $slotWidgets */
+        $slotWidgets = [];
 
-        foreach(Rank::cases() as $rank) {
+        foreach (Rank::cases() as $rank) {
             if ($rank === Rank::Two) continue;
 
             $canasta = $this->table->getCanasta($rank);
 
             if ($canasta) {
-                $lines = [];
-                foreach($canasta->getCards() as $i => $card) {
-                    if ($i === $canasta->getCards()->count() - 1) {
-                        $lines = array_merge($lines, AnsiCard::fromCard($card)->full()->getRawLines());
-                    } else {
-                        $lines = array_merge($lines, AnsiCard::fromCard($card)->top()->getRawLines());
-                    }
-                }
-                $slots[] = $lines;
+                $stack = $canasta->getCards()->reduce(
+                    fn(AnsiStack $stack, CardInterface $card, int $key) => $key === $canasta->getCards()->count() - 1
+                        ? $stack->push(AnsiCard::fromCard($card)->full())
+                        : $stack->push(AnsiCard::fromCard($card)->top())
+                    ,
+                    new AnsiStack()
+                );
             } else {
-                $slots[] =  AnsiCard::fromRank($rank)->getRawLines();
+                $stack = AnsiStack::fromAnsiCard(AnsiCard::fromRank($rank));
             }
-        }
 
-        $slotWidgets = array_map(
-            fn ($lines) => ParagraphWidget::fromText(
-                new Text(
-                    array_map(
-                        fn (string $line) => Line::fromString($line), 
-                        $lines
-                    )
-                ),
-            ), 
-            $slots
-        );
+            $slotWidgets[] = $stack->toParagraphWidget();
+        }
 
         return GridWidget::default()
             ->direction(Direction::Horizontal)
-            ->constraints(...array_fill(0, count($slotWidgets), Constraint::percentage(round(100 / count($slotWidgets)))))
+            ->constraints(...array_fill(
+                0,
+                count($slotWidgets),
+                Constraint::percentage((int)round(100 / count($slotWidgets)))
+            ))
             ->widgets(...$slotWidgets);
     }
 }
