@@ -10,8 +10,10 @@ use MartijnGastkemper\Canasta\Events\CursorMoved;
 use MartijnGastkemper\Canasta\Events\GameStarted;
 use PhpTui\Tui\DisplayBuilder;
 use PhpTui\Tui\Display\Display;
+use PhpTui\Tui\Extension\Core\Widget\BlockWidget;
 use PhpTui\Tui\Extension\Core\Widget\GridWidget;
 use PhpTui\Tui\Layout\Constraint;
+use PhpTui\Tui\Text\Title;
 use PhpTui\Tui\Widget\Direction;
 use PhpTui\Tui\Extension\Core\Widget\ParagraphWidget;
 use PhpTui\Tui\Widget\Widget;
@@ -52,13 +54,17 @@ final class RenderGame implements EventListener {
             GridWidget::default()
                 ->direction(Direction::Vertical)
                 ->constraints(
-                    Constraint::percentage(20),
-                    Constraint::percentage(40),
-                    Constraint::percentage(40),
+                    Constraint::percentage(25),
+                    Constraint::percentage(17),
+                    Constraint::percentage(15),
+                    Constraint::percentage(18),
+                    Constraint::percentage(25),
                 )
                 ->widgets(
+                    $this->getHandWidget(),
+                    $this->getTableWidget($this->table),
                     $this->getPoolWidget(),
-                    $this->getTableWidget(),
+                    $this->getTableWidget($this->table),
                     $this->getHandWidget(),
                 )
         );
@@ -72,8 +78,6 @@ final class RenderGame implements EventListener {
         $topCard = $this->pool->getTopCard();
 
         $deckCard = AnsiCard::backside();
-
-        $poolCard = null;
 
         if (!$topCard) {
             $poolCard = AnsiCard::placeholder();
@@ -98,14 +102,14 @@ final class RenderGame implements EventListener {
             );
     }
 
-    private function getTableWidget(): Widget {
+    private function getTableWidget(Table $table): Widget {
         /** @var array<int, ParagraphWidget> $slotWidgets */
         $slotWidgets = [];
 
         foreach (Rank::cases() as $rank) {
             if ($rank === Rank::Two) continue;
 
-            $canasta = $this->table->getCanasta($rank);
+            $canasta = $table->getCanasta($rank);
 
             if ($canasta) {
                 $stack = $canasta->getCards()->reduce(
@@ -122,13 +126,17 @@ final class RenderGame implements EventListener {
             $slotWidgets[] = $stack->toParagraphWidget();
         }
 
-        return GridWidget::default()
-            ->direction(Direction::Horizontal)
-            ->constraints(...array_fill(
-                0,
-                count($slotWidgets),
-                Constraint::percentage((int)round(100 / count($slotWidgets)))
-            ))
-            ->widgets(...$slotWidgets);
+        return BlockWidget::default()
+            ->titles(Title::fromString($table->teamName))
+            ->widget(
+                GridWidget::default()
+                ->direction(Direction::Horizontal)
+                ->constraints(...array_fill(
+                    0,
+                    count($slotWidgets),
+                    Constraint::percentage((int)round(100 / count($slotWidgets)))
+                ))
+                ->widgets(...$slotWidgets)
+            );
     }
 }

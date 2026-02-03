@@ -29,7 +29,7 @@ final class Game {
         $this->pool = new Pool();
         $this->hand = Hand::createFromDeck($this->deck, 11);
         $this->pool->addCard($this->deck->drawCard());
-        $this->table = new Table();
+        $this->table = new Table("Team top / bottom");
     }
 
     public function nextPlayer(): void {

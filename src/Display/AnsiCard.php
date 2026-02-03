@@ -74,7 +74,7 @@ final class AnsiCard {
     }
 
     public function top(): self {
-        $this->lines = array_slice($this->lines('', $this->middleChar), 0, 2);
+        $this->lines = array_slice($this->lines('', $this->middleChar), 0, 1);
         return $this;
     }
 

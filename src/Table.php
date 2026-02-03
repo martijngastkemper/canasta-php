@@ -7,6 +7,8 @@ final class Table {
     /** @var array<Canasta> */
     private array $canastas = [];
 
+    public function __construct(public readonly string $teamName) {}
+
     public function addCanasta(Canasta $canasta): self {
         $existingCanasta = null;
 

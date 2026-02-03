@@ -20,7 +20,7 @@ final class HandWidgetRenderer implements WidgetRenderer {
         $y = $area->top();
 
         foreach ($widget->hand->getCards() as $cardIndex => $card) {
-            $ansiCard = AnsiCard::fromCard($card);
+            $ansiCard = AnsiCard::fromCard($card)->full();
             foreach ($ansiCard->getRawLines() as $i => $line) {
                 if (!$widget->hand->isSelected($card)) $i += 1;
 
@@ -35,7 +35,7 @@ final class HandWidgetRenderer implements WidgetRenderer {
 
             if ($x > $area->right()) {
                 $x = $area->left();
-                $y += $ansiCard->getHeight() + 2;
+                $y += round($ansiCard->getHeight() / 2, 0, PHP_ROUND_HALF_UP);
             }
         }
     }
