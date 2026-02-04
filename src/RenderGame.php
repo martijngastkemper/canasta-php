@@ -19,7 +19,7 @@ use PhpTui\Tui\Extension\Core\Widget\ParagraphWidget;
 use PhpTui\Tui\Widget\Widget;
 
 final class RenderGame implements EventListener {
-    private Hand $hand;
+    private Player $hand;
     private Pool $pool;
     private Table $table;
     private int $cursorPosition = 0;

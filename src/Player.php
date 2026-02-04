@@ -2,22 +2,21 @@
 
 namespace MartijnGastkemper\Canasta;
 
-final class Hand {
+final class Player {
 
     /**
      * @var array<int>
      */
     private array $selectedCardIndexes = [];
 
-    public function __construct(private Cards $cards) {
-    }
+    public function __construct(private Cards $cards, private string $name) {}
 
-    public static function createFromDeck(Deck $deck, int $numberOfCards): Hand {
+    public static function createFromDeck(Deck $deck, int $numberOfCards, string $name): Player {
         $cards = [];
         for ($i = 0; $i < $numberOfCards; $i++) {
             $cards[] = $deck->drawCard();
         }
-        return new Hand(new Cards($cards)->sort());
+        return new Player(new Cards($cards)->sort(), $name);
     }
 
     public function addCard(CardInterface $card): self {
@@ -29,6 +28,10 @@ final class Hand {
 
     public function getCards(): Cards {
         return $this->cards;
+    }
+
+    public function getName(): string {
+        return $this->name;
     }
 
     public function getSelectedCards(): Cards {

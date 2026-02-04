@@ -7,7 +7,7 @@ use MartijnGastkemper\Canasta\Deck;
 use MartijnGastkemper\Canasta\Dispatcher;
 use MartijnGastkemper\Canasta\Game;
 use MartijnGastkemper\Canasta\RenderGame;
-use MartijnGastkemper\Canasta\Hand;
+use MartijnGastkemper\Canasta\Player;
 use PhpTui\Term\Terminal;  
 use PhpTui\Term\KeyCode;
 use PhpTui\Term\KeyModifiers;
